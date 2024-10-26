@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 pragma solidity >=0.5.0;
 
-/// @title Pool state that can change
+/// @title Pool state that can change 可以更改的池状态
 /// @notice These methods compose the pool's state, and can change with any frequency including multiple times
 /// per transaction
+/// 这些方法构成池的状态，并且可以以任意频率更改，包括每个事务多次更改
 interface IUniswapV3PoolState {
     /// @notice The 0th storage slot in the pool stores many values, and is exposed as a single method to save gas
     /// when accessed externally.
@@ -32,10 +33,12 @@ interface IUniswapV3PoolState {
         );
 
     /// @notice The fee growth as a Q128.128 fees of token0 collected per unit of liquidity for the entire life of the pool
+    /// 在池的整个生命周期内，每单位流动性收取的token0费用
     /// @dev This value can overflow the uint256
     function feeGrowthGlobal0X128() external view returns (uint256);
 
     /// @notice The fee growth as a Q128.128 fees of token1 collected per unit of liquidity for the entire life of the pool
+    /// 在池的整个生命周期内，每单位流动性收取的token1费用
     /// @dev This value can overflow the uint256
     function feeGrowthGlobal1X128() external view returns (uint256);
 

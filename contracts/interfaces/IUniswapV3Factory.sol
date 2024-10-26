@@ -2,7 +2,9 @@
 pragma solidity >=0.5.0;
 
 /// @title The interface for the Uniswap V3 Factory
+/// Uniswap V3 工厂接口
 /// @notice The Uniswap V3 Factory facilitates creation of Uniswap V3 pools and control over the protocol fees
+/// Uniswap V3 工厂创建Uniswap V3 pools并控制协议费用
 interface IUniswapV3Factory {
     /// @notice Emitted when the owner of the factory is changed
     /// @param oldOwner The owner before the owner was changed
@@ -29,18 +31,23 @@ interface IUniswapV3Factory {
     event FeeAmountEnabled(uint24 indexed fee, int24 indexed tickSpacing);
 
     /// @notice Returns the current owner of the factory
+    /// 返回当前工厂的owner
     /// @dev Can be changed by the current owner via setOwner
     /// @return The address of the factory owner
     function owner() external view returns (address);
 
     /// @notice Returns the tick spacing for a given fee amount, if enabled, or 0 if not enabled
+    /// 如果使用，返回一个给定fee金额的tick spacing，如果未使用，返回0
     /// @dev A fee amount can never be removed, so this value should be hard coded or cached in the calling context
+    /// fee费用金额永远不能被删除，因此该值应该被硬编码或缓存在调用上下文中
     /// @param fee The enabled fee, denominated in hundredths of a bip. Returns 0 in case of unenabled fee
     /// @return The tick spacing
     function feeAmountTickSpacing(uint24 fee) external view returns (int24);
 
     /// @notice Returns the pool address for a given pair of tokens and a fee, or address 0 if it does not exist
+    /// 给定一对token和fee，返回pool地址，如果不存在返回地址0
     /// @dev tokenA and tokenB may be passed in either token0/token1 or token1/token0 order
+    /// tokenA和tokenB可以以token0/token1或token1/token0的顺序传递
     /// @param tokenA The contract address of either token0 or token1
     /// @param tokenB The contract address of the other token
     /// @param fee The fee collected upon every swap in the pool, denominated in hundredths of a bip
@@ -71,6 +78,7 @@ interface IUniswapV3Factory {
     function setOwner(address _owner) external;
 
     /// @notice Enables a fee amount with the given tickSpacing
+    /// 开启一个给定的tickSpacing的fee
     /// @dev Fee amounts may never be removed once enabled
     /// @param fee The fee amount to enable, denominated in hundredths of a bip (i.e. 1e-6)
     /// @param tickSpacing The spacing between ticks to be enforced for all pools created with the given fee amount

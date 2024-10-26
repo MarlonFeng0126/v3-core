@@ -97,6 +97,7 @@ library SqrtPriceMath {
     }
 
     /// @notice Gets the next sqrt price given an input amount of token0 or token1
+    /// 给定输入量token0或token1，获取下一个根号价格
     /// @dev Throws if price or liquidity are 0, or if the next price is out of bounds
     /// @param sqrtPX96 The starting price, i.e., before accounting for the input amount
     /// @param liquidity The amount of usable liquidity
@@ -142,7 +143,8 @@ library SqrtPriceMath {
                 : getNextSqrtPriceFromAmount0RoundingUp(sqrtPX96, liquidity, amountOut, false);
     }
 
-    /// @notice Gets the amount0 delta between two prices
+    /// @notice Gets the amount0 delta between two prices 
+    /// 在两个价格之间获取amount0的增量
     /// @dev Calculates liquidity / sqrt(lower) - liquidity / sqrt(upper),
     /// i.e. liquidity * (sqrt(upper) - sqrt(lower)) / (sqrt(upper) * sqrt(lower))
     /// @param sqrtRatioAX96 A sqrt price
@@ -156,9 +158,10 @@ library SqrtPriceMath {
         uint128 liquidity,
         bool roundUp
     ) internal pure returns (uint256 amount0) {
+        // 排序，sqrtRatioAX96存小的值，sqrtRatioBX96存大的值
         if (sqrtRatioAX96 > sqrtRatioBX96) (sqrtRatioAX96, sqrtRatioBX96) = (sqrtRatioBX96, sqrtRatioAX96);
 
-        uint256 numerator1 = uint256(liquidity) << FixedPoint96.RESOLUTION;
+        uint256 numerator1 = uint256(liquidity) << FixedPoint96.RESOLUTION;  // liquidity << 96，即liquidity * (2**96)
         uint256 numerator2 = sqrtRatioBX96 - sqrtRatioAX96;
 
         require(sqrtRatioAX96 > 0);

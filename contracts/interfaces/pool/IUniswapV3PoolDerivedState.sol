@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 pragma solidity >=0.5.0;
 
-/// @title Pool state that is not stored
+/// @title Pool state that is not stored 未存储的池状态
 /// @notice Contains view functions to provide information about the pool that is computed rather than stored on the
 /// blockchain. The functions here may have variable gas costs.
+/// 包含视图函数，以提供有关计算池的信息，而不是存储在区块链上。这里的函数可能有可变的gas成本。
 interface IUniswapV3PoolDerivedState {
     /// @notice Returns the cumulative tick and liquidity as of each timestamp `secondsAgo` from the current block timestamp
     /// @dev To get a time weighted average tick or liquidity-in-range, you must call this with two values, one representing

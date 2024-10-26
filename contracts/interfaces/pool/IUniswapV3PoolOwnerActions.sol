@@ -3,6 +3,7 @@ pragma solidity >=0.5.0;
 
 /// @title Permissioned pool actions
 /// @notice Contains pool methods that may only be called by the factory owner
+/// 包含只能由工厂owner调用的池方法
 interface IUniswapV3PoolOwnerActions {
     /// @notice Set the denominator of the protocol's % share of the fees
     /// @param feeProtocol0 new protocol fee for token0 of the pool

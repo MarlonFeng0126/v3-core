@@ -3,24 +3,35 @@ pragma solidity >=0.5.0 <0.8.0;
 
 /// @title Oracle
 /// @notice Provides price and liquidity data useful for a wide variety of system designs
+/// 为各种系统设计提供有用的价格和流动性数据
 /// @dev Instances of stored oracle data, "observations", are collected in the oracle array
 /// Every pool is initialized with an oracle array length of 1. Anyone can pay the SSTOREs to increase the
 /// maximum length of the oracle array. New slots will be added when the array is fully populated.
 /// Observations are overwritten when the full length of the oracle array is populated.
 /// The most recent observation is available, independent of the length of the oracle array, by passing 0 to observe()
+/// 存储oracle数据的实例，"observations"，被收集到oracle数组中。
+/// 每个池初始化的oracle数组长度为1。任何人都可以付钱给SSTOREs来增加oracle数组的最大长度。当数组被完全填充时，将添加新的插槽。
+/// 当填充oracle数组的整个长度时，Observations将被覆盖。
+/// 通过向observe()传递0，可以获得与oracle数组长度无关的最新observation值。
 library Oracle {
     struct Observation {
-        // the block timestamp of the observation
+        // the block timestamp of the observation 
+        // 每个observation所存储的时间戳
         uint32 blockTimestamp;
         // the tick accumulator, i.e. tick * time elapsed since the pool was first initialized
+        // tick累加器，自池子创建之后的 tick * time 的累计值
+        // 在 UniswapV2 中，存储的是价格累计值 priceCumulative，而UniswapV3 并不直接计算价格累计值，而是计算 tick 累计值。
         int56 tickCumulative;
         // the seconds per liquidity, i.e. seconds elapsed / max(1, liquidity) since the pool was first initialized
+        // 每个流动性的秒数，即自池首次初始化以来，经过的秒数/max(1，liquidity)
         uint160 secondsPerLiquidityCumulativeX128;
-        // whether or not the observation is initialized
+        // whether or not the observation is initialized 
+        // 表明observation是否已经初始化
         bool initialized;
     }
 
     /// @notice Transforms a previous observation into a new observation, given the passage of time and the current tick and liquidity values
+    /// 给定时间的流逝以及当前的tick和流动性值，将之前的observation转换为新的observation
     /// @dev blockTimestamp _must_ be chronologically equal to or greater than last.blockTimestamp, safe for 0 or 1 overflows
     /// @param last The specified observation to be transformed
     /// @param blockTimestamp The timestamp of the new observation
@@ -45,6 +56,7 @@ library Oracle {
     }
 
     /// @notice Initialize the oracle array by writing the first slot. Called once for the lifecycle of the observations array
+    /// 通过写入第一个槽来初始化oracle数组。在observations数组的生命周期内调用一次
     /// @param self The stored oracle array
     /// @param time The time of the oracle initialization, via block.timestamp truncated to uint32
     /// @return cardinality The number of populated elements in the oracle array
@@ -62,10 +74,12 @@ library Oracle {
         return (1, 1);
     }
 
-    /// @notice Writes an oracle observation to the array
+    /// @notice Writes an oracle observation to the array 写一个oracle observation到observations数组
     /// @dev Writable at most once per block. Index represents the most recently written element. cardinality and index must be tracked externally.
     /// If the index is at the end of the allowable array length (according to cardinality), and the next cardinality
     /// is greater than the current one, cardinality may be increased. This restriction is created to preserve ordering.
+    /// 每个块最多可写一次。Index表示最近写入的元素。基数和索引必须在外部跟踪。
+    /// 如果索引位于允许的数组长度的末尾（根据基数），并且下一个基数大于当前的基数，则基数可能会增加。创建此限制是为了保持排序。
     /// @param self The stored oracle array
     /// @param index The index of the observation that was most recently written to the observations array
     /// @param blockTimestamp The timestamp of the new observation
@@ -75,6 +89,7 @@ library Oracle {
     /// @param cardinalityNext The new length of the oracle array, independent of population
     /// @return indexUpdated The new index of the most recently written element in the oracle array
     /// @return cardinalityUpdated The new cardinality of the oracle array
+    /// 在 Layer1中，每个区块只会发生一次更新 observations;而在Layer2，因为时间戳1分钟才会更新一次，所以也是1分钟才会发生一次更新 observations。
     function write(
         Observation[65535] storage self,
         uint16 index,
@@ -87,9 +102,11 @@ library Oracle {
         Observation memory last = self[index];
 
         // early return if we've already written an observation this block
+        // 当上一个 Observation 的时间戳和当前时间戳一致的时候，则不会更新
         if (last.blockTimestamp == blockTimestamp) return (index, cardinality);
 
         // if the conditions are right, we can bump the cardinality
+        // 如果条件合适，我们可以增加基数
         if (cardinalityNext > cardinality && index == (cardinality - 1)) {
             cardinalityUpdated = cardinalityNext;
         } else {
@@ -233,9 +250,13 @@ library Oracle {
     /// 0 may be passed as `secondsAgo' to return the current cumulative values.
     /// If called with a timestamp falling between two observations, returns the counterfactual accumulator values
     /// at exactly the timestamp between the two observations.
+    /// 如果在所需的观察时间戳不存在或之前的observation不存在，则回滚。
+    /// 0可以作为`secondsAgo'传递，以返回当前的累积值。
+    /// 如果使用两个observations值之间的时间戳调用，则返回恰好在两个观测值之间的时间戳处的反事实累加器值。
     /// @param self The stored oracle array
     /// @param time The current block timestamp
     /// @param secondsAgo The amount of time to look back, in seconds, at which point to return an observation
+    /// 向后看的时间，以秒为单位，在这一点上返回一个观察值
     /// @param tick The current tick
     /// @param index The index of the observation that was most recently written to the observations array
     /// @param liquidity The current in-range pool liquidity

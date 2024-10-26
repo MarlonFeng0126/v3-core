@@ -3,9 +3,11 @@ pragma solidity >=0.5.0;
 
 /// @title BitMath
 /// @dev This library provides functionality for computing bit properties of an unsigned integer
+/// 这个库提供了计算无符号整数的位属性的功能
 library BitMath {
     /// @notice Returns the index of the most significant bit of the number,
     ///     where the least significant bit is at index 0 and the most significant bit is at index 255
+    /// 最低有效位位于索引0,最高有效位位于索引255的,返回数字的最高有效位的索引
     /// @dev The function satisfies the property:
     ///     x >= 2**mostSignificantBit(x) and x < 2**(mostSignificantBit(x)+1)
     /// @param x the value for which to compute the most significant bit, must be greater than 0
@@ -46,6 +48,7 @@ library BitMath {
 
     /// @notice Returns the index of the least significant bit of the number,
     ///     where the least significant bit is at index 0 and the most significant bit is at index 255
+    /// 最低有效位位于索引0,最高有效位位于索引255,返回数字的最低有效位的索引
     /// @dev The function satisfies the property:
     ///     (x & 2**leastSignificantBit(x)) != 0 and (x & (2**(leastSignificantBit(x)) - 1)) == 0)
     /// @param x the value for which to compute the least significant bit, must be greater than 0

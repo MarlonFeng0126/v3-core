@@ -6,6 +6,7 @@ pragma solidity >=0.4.0 <0.8.0;
 /// @dev Handles "phantom overflow" i.e., allows multiplication and division where an intermediate value overflows 256 bits
 library FullMath {
     /// @notice Calculates floor(a×b÷denominator) with full precision. Throws if result overflows a uint256 or denominator == 0
+    /// 精确计算floor（a×b÷denominator）,如果结果溢出uint256或分母 == 0则抛出异常
     /// @param a The multiplicand
     /// @param b The multiplier
     /// @param denominator The divisor
@@ -106,6 +107,7 @@ library FullMath {
     }
 
     /// @notice Calculates ceil(a×b÷denominator) with full precision. Throws if result overflows a uint256 or denominator == 0
+    /// 完全精确地计算ceil（a×b÷denominator）。如果结果溢出uint256或分母==0则抛出异常
     /// @param a The multiplicand
     /// @param b The multiplier
     /// @param denominator The divisor
